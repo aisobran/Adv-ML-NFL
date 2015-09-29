@@ -49,3 +49,6 @@ This project will also compare various machine learning algorithms and assess th
 The size of the dataset is relatively small as each teams plays 16 regular season games and run approximantly 50-60 playes per game. We hope to mitage this issue by training on the historical data going back 6 years. It could be assumed coaches talented enough to earn multi million dollar contracts do not have predictable tendencies as they would be exploited by opposing coaches. 
 
 #References
+
+1. http://www.cs.cornell.edu/courses/cs6780/2010fa/projects/warner_cs6780.pdf
+2. https://www.credera.com/blog/business-intelligence/using-machine-learning-predict-nfl-games/
