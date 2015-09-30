@@ -62,3 +62,6 @@ The size of the dataset is relatively small as each teams plays 16 regular seaso
 2. http://ttic.uchicago.edu/~kgimpel/papers/machine-learning-project-2006.pdf
 3. http://www.inpredictable.com/2013/08/is-nfl-betting-market-getting-more.html
 4. http://www.mpipks-dresden.mpg.de/~federico/myarticles/sports-jqas.pdf
+5. http://cs229.stanford.edu/proj2006/BabakHamadani-PredictingNFLGames.pdf
+6. http://www.incrediblemolk.com/aws-machine-learning-example-nfl-player-positions/
+7. http://www.engineering.leeds.ac.uk/e-engineering/documents/JackBlundell.pdf
