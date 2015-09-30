@@ -51,4 +51,4 @@ The size of the dataset is relatively small as each teams plays 16 regular seaso
 #References
 
 1. http://www.cs.cornell.edu/courses/cs6780/2010fa/projects/warner_cs6780.pdf
-2. https://www.credera.com/blog/business-intelligence/using-machine-learning-predict-nfl-games/
+2. http://ttic.uchicago.edu/~kgimpel/papers/machine-learning-project-2006.pdf
