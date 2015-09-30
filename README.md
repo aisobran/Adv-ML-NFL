@@ -5,10 +5,16 @@ The purpose of this project is to explore the effectivess of advanced machine le
 
 This project will also compare various machine learning algorithms and assess their strengths and weaknesses. We also examine the effect of data aggregation as data can be trained on a play level, drive level, quarter level, half level, game level, or season level.
 
+#Previous Work
+
+Las Vegas correcly selects the correct favorite at a rate of 61.2-74.7% from 1989 - 2012 [3]. Previous work [1] has acheived a success rate of 64%. The NFL also has one of the lowest rates of upsets among all sports at 36.4% [4].
+
+There is no history of research for play prediction based a play by play data. These is also no research predicting the performance of players all though many fantasy football pundits may offer projections. This has been ommitted as aggregating a useful dataset for comparison is not feasible.
+
 
 #Data Sets
 1. Play by play Data: Consists of summary of each play in each game including, time, down, yards to go, pass/run, distance, current score, as well as other metrics. From 2009-present.
-2. NFL Combine data: A set of metrics used to measure the athleticism of players as well as one test the measue mental aptitude.
+2. NFL Combine data: A set of metrics used to measure the athleticism of players as well as one test to measue mental aptitude.
 3. Coach history: Head coach, offensive coordinator, defensive coordinator
 4. Rosters: The players that make up a team
 5. Weather: Weather of games 
@@ -18,14 +24,16 @@ This project will also compare various machine learning algorithms and assess th
 1. ANNs - Deep Belief, Recurrent, Fuzzy
 2. SVMs with Kernel Transformations
 3. Reinforcement Learning
-4. Ensemble of the above
+4. Hidden Markov Chain
+5. Ensemble of the above
+
 
 #Optimizations
 1. Gradient Descent
 2. Particle Swarm Optimization
 3. Simulated Annealing
 4. MaxWalkSat
-5. Differtiating Evolution
+5. Differentiating Evolution
 
 #Study Plan
 
@@ -39,9 +47,9 @@ This project will also compare various machine learning algorithms and assess th
 
 #Testing Validity
 
-1. Accuracy of predicting type of next play(run, pass, punt, field goal), strategic location of next play(left, right, inside, deep, short, middle)
-2. Accuracy of predicting play performacne in a game
-3. Accuracy of predicting winners
+1. Accuracy of predicting type of next play(run, pass, punt, field goal), strategic location of next play(left, right, inside, deep, short, middle) 
+2. Accuracy of predicting player performance in game
+3. Accuracy of predicting winners to be measured against the previous research of 64% [1], the historic rate for bookies, as well as the upset rate for teams.
 4. Regression accuracy of predicting scores
 
 
@@ -52,3 +60,5 @@ The size of the dataset is relatively small as each teams plays 16 regular seaso
 
 1. http://www.cs.cornell.edu/courses/cs6780/2010fa/projects/warner_cs6780.pdf
 2. http://ttic.uchicago.edu/~kgimpel/papers/machine-learning-project-2006.pdf
+3. http://www.inpredictable.com/2013/08/is-nfl-betting-market-getting-more.html
+4. http://www.mpipks-dresden.mpg.de/~federico/myarticles/sports-jqas.pdf
