@@ -7,7 +7,7 @@ This project will also compare various machine learning algorithms and assess th
 
 #Previous Work
 
-Las Vegas correcly selects the correct favorite at a rate of 61.2-74.7% from 1989 - 2012 [3]. Previous work [1] has acheived a success rate of 64%. The NFL also has one of the lowest rates of upsets among all sports at 36.4% [4].
+Las Vegas correctly selects the correct favorite at a rate of 61.2-74.7% from 1989 - 2012 [3]. Previous work [1] has acheived a success rate of 64%. The NFL also has one of the lowest rates of upsets among all sports at 36.4% [4].
 
 There is no history of research for play prediction based a play by play data. These is also no research predicting the performance of players all though many fantasy football pundits may offer projections. This has been ommitted as aggregating a useful dataset for comparison is not feasible.
 
@@ -24,16 +24,16 @@ There is no history of research for play prediction based a play by play data. T
 
 #Algorithms
 1. Deep Belief Nets - Structure of deep belief nets will be varied and compared to determine the most useful structure. Use in play by play data can be represented as a time-series. Application of deep belief nets has been successfully applied to time-series data in previous work using time-series data [8] by treating the previous historical data as the feature set. 
-2. SVMs with Kernel Transformations - 
+2. SVMs with Kernel Transformations - The NFL game prediction has been previously done using SVM and kernel transformations in [5] and it it uses linear, polynomial and tangent kernels. This can be applied to perform play prediction.
 3. Reinforcement Learning -
-4. Hidden Markov Chain -
+4. Hidden Markov Chain - Markov Models can be used to predict plays by assessing the current state if the game. This can be used as another strategy to predict plays wihtout considering the sequence of previous plays. A Markov model of football has be described in [9].
 5. Logistic Regression - This will be used as a benchmark as previous work has mainly used logistive regression for prediction.
 6. Ensemble of the above - 
 
 
 #Optimizations
 
-1. Particle Swarm Optimization - This optimization tachnique to determine the most useful structure for deep beleif nets was used for optimizing deep belief nets in previous work [8]. We will apply it to deep belief nets as well as the other techniques listed above.
+1. Particle Swarm Optimization - This optimization technique to determine the most useful structure for deep beleif nets was used for optimizing deep belief nets in previous work [8]. We will apply it to deep belief nets as well as the other techniques listed above.
 2. Differentiating Evolution - This optimization technique will be used on the above algorithms. Comparisons will be made between this and particle swarm optimization.
 
 #Study Plan
@@ -72,3 +72,4 @@ A report, source code, and data will be delivered. This project will be tracked 
 6. http://www.incrediblemolk.com/aws-machine-learning-example-nfl-player-positions/
 7. http://www.engineering.leeds.ac.uk/e-engineering/documents/JackBlundell.pdf
 8. http://www.sciencedirect.com/science/article/pii/S0925231213007388
+9. http://archive.advancedfootballanalytics.com/2011/09/markov-model-of-football.html
