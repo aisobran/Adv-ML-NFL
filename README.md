@@ -25,10 +25,9 @@ There is no history of research for play prediction based a play by play data. T
 #Algorithms
 1. Deep Belief Nets - Structure of deep belief nets will be varied and compared to determine the most useful structure. Use in play by play data can be represented as a time-series. Application of deep belief nets has been successfully applied to time-series data in previous work using time-series data [8] by treating the previous historical data as the feature set. 
 2. SVMs with Kernel Transformations - The NFL game prediction has been previously done using SVM and kernel transformations in [5] and it it uses linear, polynomial and tangent kernels. This can be applied to perform play prediction.
-3. Reinforcement Learning -
-4. Hidden Markov Chain - Markov Models can be used to predict plays by assessing the current state if the game. This can be used as another strategy to predict plays wihtout considering the sequence of previous plays. A Markov model of football has be described in [9].
+4. Hidden Markov Model - Markov Models can be used to predict plays by assessing the current state if the game. This can be used as another strategy to predict plays wihtout considering the sequence of previous plays. A Markov model of football has be described in [9].
 5. Logistic Regression - This will be used as a benchmark as previous work has mainly used logistive regression for prediction.
-6. Ensemble of the above - 
+6. Ensemble of the above - After optimization of the the above models an enseble will be explored using weights. 
 
 
 #Optimizations
