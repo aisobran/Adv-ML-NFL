@@ -30,6 +30,14 @@ with open('NFLparse.csv','wb') as fp:
 		if len(line) > 3:
 			line[3:] = [';'.join(line[3:])]
 
+		line[0] = line[0].split(',')
+		if len(line[0]) == 3:
+			line[0].append(' ')
+		line[0].reverse()
+		for item in line[0]:
+			line.insert(1,item)		 
+		line.pop(0)
+
 		print line, len(line)
 		writer.writerow(line)
 
