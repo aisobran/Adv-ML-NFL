@@ -1,0 +1,409 @@
+{
+  "paragraphs": [
+    {
+      "text": "val removeEndQuarters \u003d \"\"\"END QUARTER\"\"\".r\n\nval rawBlocks \u003d sc.textFile(\"/Users/asobran/Adv-ML-NFL/output.txt\").filter(line \u003d\u003e !removeEndQuarters.findFirstIn(line).isDefined)",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        }
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1444315030375_-1024948243",
+      "id": "20151008-103710_1133665122",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "removeEndQuarters: scala.util.matching.Regex \u003d END QUARTER\nrawBlocks: org.apache.spark.rdd.RDD[String] \u003d MapPartitionsRDD[2] at filter at \u003cconsole\u003e:32\n"
+      },
+      "dateCreated": "Oct 8, 2015 10:37:10 AM",
+      "dateStarted": "Nov 28, 2015 11:17:44 PM",
+      "dateFinished": "Nov 28, 2015 11:18:06 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "val header \u003d \"\"\"YEAR: \\d\\d\\d\\d WEEK: \\d+\"\"\".r\n\nval indexedHeaders \u003d rawBlocks.zipWithIndex.filter(line \u003d\u003e header.findFirstIn(line._1).isDefined).collect\n\nval filterCharacter \u003d \"\"\"(),\"\"\".toSet",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        }
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1447052063696_-1505697472",
+      "id": "20151109-015423_1372072401",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "header: scala.util.matching.Regex \u003d YEAR: \\d\\d\\d\\d WEEK: \\d+\nindexedHeaders: Array[(String, Long)] \u003d Array((YEAR: 2009 WEEK: 1,0), (YEAR: 2009 WEEK: 2,2704), (YEAR: 2009 WEEK: 3,5499), (YEAR: 2009 WEEK: 4,8200), (YEAR: 2009 WEEK: 5,10628), (YEAR: 2009 WEEK: 6,13005), (YEAR: 2009 WEEK: 7,15424), (YEAR: 2009 WEEK: 8,17630), (YEAR: 2009 WEEK: 9,19857), (YEAR: 2009 WEEK: 10,22108), (YEAR: 2009 WEEK: 11,24736), (YEAR: 2009 WEEK: 12,27484), (YEAR: 2009 WEEK: 13,30208), (YEAR: 2009 WEEK: 14,33001), (YEAR: 2009 WEEK: 15,35726), (YEAR: 2009 WEEK: 16,38500), (YEAR: 2010 WEEK: 1,41274), (YEAR: 2010 WEEK: 2,44027), (YEAR: 2010 WEEK: 3,46733), (YEAR: 2010 WEEK: 4,49500), (YEAR: 2010 WEEK: 5,51860), (YEAR: 2010 WEEK: 6,54336), (YEAR: 2010 WEEK: 7,56815), (YEAR: 2010 WEEK: 8,59274), (YEAR: 2010 WEEK: 9,61566), (YEAR: 2010 WEEK: 10,63818), (YEAR: 2010 WEEK: 11,6...filterCharacter: scala.collection.immutable.Set[Char] \u003d Set((, ), ,)\n"
+      },
+      "dateCreated": "Nov 9, 2015 1:54:23 AM",
+      "dateStarted": "Nov 28, 2015 11:17:46 PM",
+      "dateFinished": "Nov 28, 2015 11:18:08 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "val passMatch \u003d \"\"\"pass (incomplete |)(short |deep |)(left|right|middle|left |right |middle |)\"\"\".r\n\ndef passParser(playString: String): (String, String, String, String) \u003d {\n    \n    val firstTuple \u003d playString.split(\"\"\"\"\\)\"\"\")(0) split(\" \")\n    val firstLine \u003d playString.split(\"\"\"\\)\"\"\")(0) \n    val play \u003d if(playString.contains(\") Official requested time be reset to \")){\n                playString.split(\"\"\" Official requested time be reset to \"\"\")(1).split(\" \").drop(1).mkString(\" \") \n    }else if(playString.contains(\" reported in as eligible.\")){\n        playString.split(\"\"\" reported in as eligible. \"\"\")(1).split(\" \").drop(1).mkString(\" \") \n    }else if(playString.contains(\"Field Goal formation\")){\n        playString.split(\"\"\"(Field Goal formation)\"\"\")(1).split(\" \").drop(1).mkString(\" \")\n    }else if(playString.contains(\" in as QB \")){\n        playString.split(\"\"\" in as QB \"\"\")(1).split(\" \").drop(1).mkString(\" \")\n    }else if(playString.contains(\" Change of yard line due to change of possession. \")){\n        playString.split(\"\"\" Change of yard line due to change of possession. \"\"\")(1).split(\" \").drop(1).mkString(\" \")\n    }else if(playString.contains(\" possession. \")){\n        playString.split(\"\"\" possession. \"\"\")(1).split(\" \").drop(1).mkString(\" \") \n    }else if(playString.contains(\"Lateral from 17-Cambell \")){\n        playString.split(\"Lateral from 17-Cambell \")(1).split(\" \").drop(1).mkString(\" \")   \n    }else if(playString.contains(\"Wildcat, direct snap to B.Smith (M.Sanchez at WR). \")){\n        playString.split(\"\"\"\\(M.Sanchez at WR\\). \"\"\")(1).split(\" \").drop(1).mkString(\" \")\n    }else if(playString.contains(\" Orton returns at QB \")){\n        playString.split(\" Orton returns at QB \")(1).split(\" \").drop(1).mkString(\" \")\n    }else if(playString.contains(\"Reverse, Favre hands to Harvin who hands to Moss. \")){\n        playString.split(\"Reverse, Favre hands to Harvin who hands to Moss. \")(1).split(\" \").drop(1).mkString(\" \")\n    }else if(playString.contains(\"Hatcher of Dallas has a neck strain; he may return. \")){\n        playString.split(\"Hatcher of Dallas has a neck strain; he may return. \")(1).split(\" \").drop(1).mkString(\" \")\n    }else{\n        playString.split(\"\"\":\"\"\")(1).split(\" \").drop(1).mkString(\" \")\n    }\n    \n    println(\"Pass Parser play \u003d \" + play)\n    \n    val passer \u003d if(play.contains(\"pass\")){\n        if(play.contains(\"Shotgun\")){\n            val a \u003d play.split(\"\"\"\\)\"\"\")\n            if(a.length \u003c\u003d 1){\n                \"ERROR\"\n            }else{\n                a(1).split(\" \")(1)\n            }\n                    //(\"\", \"\")\n        }else if(play.contains(\"No Huddle\")){\n            val a \u003d play.split(\"\"\"\\)\"\"\")\n            if(a.length \u003c\u003d 1){\n                \"ERROR\"\n            }else{\n                a(1).split(\" \")(1)\n            }\n        }else{\n            play.split(\" \")(0)\n        }\n    }else{\n        \"\"\n    }\n    \n    println(\"passer \u003d \" + passer)\n            \n    val tempReceiver \u003d (if(play.contains(\"INTERCEPTED\")){ \n        if(play.contains(\" for \")){\n            play.split(\" for \")(1).split(\" \")(0) \n        }else{\n            \" \"\n        }\n    }else{\n        val x \u003d play.split(\" to \")\n        if(x.length \u003d\u003d 1){\n            \" \"\n        }else{\n            x(1).split(\" \")(0)\n        }\n    }).filterNot(filterCharacter)\n    \n    println(\"tempReceiver \u003d \" + tempReceiver)\n            \n    val receiver \u003d if(tempReceiver(tempReceiver.length - 1) \u003d\u003d \u0027.\u0027){\n        tempReceiver.dropRight(1)\n    }else{\n        tempReceiver\n    }\n    \n    println(\"receiver\u003d \"+ receiver)\n    \n    \n    val complete \u003d if(play.contains(\"incomplete\")) \"false\" else \"true\"\n    val intercepted \u003d if(play.contains(\"INTERCEPTED\")) \"true\" else \"false\"\n    \n    (passer, receiver, complete, intercepted)\n}",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1447552464011_521993526",
+      "id": "20151114-205424_814535760",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "passMatch: scala.util.matching.Regex \u003d pass (incomplete |)(short |deep |)(left|right|middle|left |right |middle |)\npassParser: (playString: String)(String, String, String, String)\n"
+      },
+      "dateCreated": "Nov 14, 2015 8:54:24 PM",
+      "dateStarted": "Nov 28, 2015 3:27:36 PM",
+      "dateFinished": "Nov 28, 2015 3:27:36 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "\n\nval parsed \u003d rawBlocks.zipWithIndex.\n    filter(line \u003d\u003e !line._1.contains(\"kicks\")).\n    filter(line \u003d\u003e !line._1.contains(\"Timeout\")).\n    filter(line \u003d\u003e !line._1.contains(\"Two-Minute\")).\n    filter(line \u003d\u003e !line._1.contains(\"Punt\")).\n    filter(line \u003d\u003e !line._1.contains(\"punts\")).\n    filter(line \u003d\u003e !line._1.contains(\"field goal\")).\n    filter(line \u003d\u003e !line._1.contains(\"END GAME\")).\n    filter(line \u003d\u003e !line._1.contains(\"extra point\")).\n    filter(line \u003d\u003e !line._1.contains(\"\"\"#\"\"\")).\n    filter(line \u003d\u003e !line._1.contains(\"End of \")).\n    filter(line \u003d\u003e !line._1.contains(\"TWO-POINT\")). //add this back to determine points\n    filter(line \u003d\u003e !line._1.contains(\"injured\")).\n    filter(line \u003d\u003e line._1.contains(\"pass\")).\n    map{line \u003d\u003e\n        if(header.findFirstIn(line._1).isDefined){\n            Array(line._1)\n        }else{\n            try{\n            val index \u003d line._2\n            val time \u003d indexedHeaders.filter(_._2 \u003c index).reduce((a,b) \u003d\u003e if(a._2 \u003e b._2) a else b)._1\n            val year \u003d time.split(\" \")(1)\n            val week \u003d time.split(\" \")(3)\n        \n            val playString \u003d line._1\n            val possession \u003d playString.split(\" \")(0).filterNot(filterCharacter)\n            \n            val firstTuple \u003d line._1.split(\"\"\"\"\\)\"\"\")(0) split(\" \")\n            val firstLine \u003d line._1.split(\"\"\"\\)\"\"\")(0)\n            \n            val sideOf50 \u003d if(firstLine.contains(\"50\")) possession else playString.split(\" \")(1)\n            //val sideOf50 \u003d \"\"\n            \n            val yardLine \u003d if(firstLine.contains(\"50\")){\n                \"50\"\n            }else{        //50 yard line\n                playString.split(\" \")(2).filterNot(filterCharacter) \n            }\n            \n            val (down, togo) \u003d if(firstLine.contains(\"50\")){\n                if(firstTuple(2) \u003d\u003d \"50,\"){\n                    (playString.split(\" \")(4), playString.split(\" \")(6).filterNot(filterCharacter)) \n                }else{\n                    (playString.split(\" \")(3), playString.split(\" \")(5).filterNot(filterCharacter))\n                }\n            }else{\n                (playString.split(\" \")(4), playString.split(\" \")(6).filterNot(filterCharacter))\n            }\n            \n            val quarterTime \u003d line._1.split(\"\"\"\\(\"\"\")(2).split(\" \")(0).filterNot(filterCharacter)\n            \n            val play \u003d line._1.split(\"\"\":\"\"\")(1).split(\" \").drop(1).mkString(\" \")\n                 \n            val shotgun \u003d if(play.contains(\"Shotgun\")) \"true\" else \"false\"\n            \n            val (passer, receiver, complete, intercepted) \u003d if(play.contains(\"pass\")) passParser(playString) else (\"\", \"\", \"\", \"\")\n            //val (passer, receiver, complete, intercepted) \u003d (\"\", \"\", \"\", \"\")\n            \n            val noHuddle \u003d if(play.contains(\"No Huddle\")) \"true\" else \"false\"\n            \n            val distance \u003d if(play.contains(\" deep \")) \"deep\" else if(play.contains(\" short \")) \"short\" else \"\"\n            val direction \u003d if(play.contains(\" left\")) \"left\" else if(play.contains(\" right \")) \"right\" else if(play.contains(\" middle \")) \"middle\" else \"\"\n            val runDirection \u003d if(play.contains(\" end \")) \"end\" else if(play.contains(\" up the middle \")) \"middle\" else if(play.contains(\" guard \" )) \"guard\" else if(play.contains(\" tackle \")) \"tackle\" else \"\"\n            \n            val tempString \u003d play.split(\"\"\"\\)\"\"\")\n            //val runner \u003d if(play.contains(\"pass\")) \"\" else  tempString(1).split(\" \")(0)\n            val runner \u003d play\n            \n            val yardsGained \u003d if(!play.contains(\"incomplete\") \u0026\u0026 !play.contains(\"INTERCEPTED\") \u0026\u0026 !play.contains(\"no gain\") \u0026\u0026 !play.contains(\"spiked\")) play.split(\" for \")(1).split(\" \")(0) else \"0\"\n            //val yardsGained \u003d play\n            \n            val yardsToGoalLine \u003d if(sideOf50 \u003d\u003d possession){\n                (100 - yardLine.toInt)\n            }else{\n                yardLine\n            }\n            \n            val quarter \u003d playString.split(\" \")(3).filterNot(filterCharacter).filterNot(\"\"\"Q\"\"\".toSet)\n            \n            val touchdown \u003d if(play.contains(\"TOUCHDOWN\")) \"true\" else \"false\"\n            \n            val fumble \u003d if(play.contains(\"FUMBLE\")) \"true\" else \"false\"\n            \n            val sacked \u003d if(play.contains(\"sacked\")) \"true\" else \"false\"\n            \n            val spiked \u003d if(play.contains(\"spiked\")) \"true\" else \"false\"\n            \n            Array(year, week, possession, sideOf50, yardLine, yardsToGoalLine, quarter, down, togo, quarterTime, passer, shotgun, complete, distance, direction, receiver, yardsGained, intercepted, noHuddle, touchdown, fumble, sacked, spiked, playString)\n            \n            }catch{\n                case e:Exception \u003d\u003e {\n                    println(line)\n                    Array(line._1, line._2)\n                }\n            }\n        \n            //Some(line, 0)\n            \n            \n    }\n}.collect()//.map(_.mkString(\",\")).foreach(println)",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "editorHide": true,
+        "tableHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1447052205678_-1104237447",
+      "id": "20151109-015645_1805030865",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "parsed: Array[Array[_ \u003e: String]] \u003d Array(Array(2009, 1, PIT, PIT, 42, 58, 1, 1, 10, 14:53, B.Roethlisberger, false, true, short, left, H.Ward, 5, false, false, false, false, false, false, (PIT, PIT 42, Q1, 1 and 10) (14:53) B.Roethlisberger pass short left to H.Ward to PIT 47 for 5 yards (C.Hope).), Array(2009, 1, TEN, TEN, 2, 98, 1, 2, 10, 12:40, K.Collins, false, true, short, left, A.Hall, 4, false, false, false, false, false, false, (TEN, TEN 2, Q1, 2 and 10) (12:40) K.Collins pass short left to A.Hall to TEN 6 for 4 yards (T.Polamalu).), Array(2009, 1, PIT, TEN, 43, 43, 1, 1, 10, 11:24, B.Roethlisberger, false, true, short, right, M.Wallace, 3, false, false, false, false, false, false, (PIT, TEN 43, Q1, 1 and 10) (11:24) B.Roethlisberger pass short right to M.Wallace to TEN 40 for ..."
+      },
+      "dateCreated": "Nov 9, 2015 1:56:45 AM",
+      "dateStarted": "Nov 25, 2015 9:36:50 PM",
+      "dateFinished": "Nov 25, 2015 9:37:01 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "val passMatch \u003d \"\"\"pass (incomplete |)(short |deep |)(left|right|middle|left |right |middle |)\"\"\".r\n\ndef passParser(playString: String): (String, String, String, String) \u003d {\n    \n    val firstTuple \u003d playString.split(\"\"\"\"\\)\"\"\")(0) split(\" \")\n    val firstLine \u003d playString.split(\"\"\"\\)\"\"\")(0) \n    val play \u003d if(playString.contains(\") Official requested time be reset to \")){\n                playString.split(\"\"\" Official requested time be reset to \"\"\")(1).split(\" \").drop(1).mkString(\" \") \n    }else if(playString.contains(\" reported in as eligible.\")){\n        playString.split(\"\"\" reported in as eligible. \"\"\")(1).split(\" \").drop(1).mkString(\" \") \n    }else if(playString.contains(\"Field Goal formation\")){\n        playString.split(\"\"\"(Field Goal formation)\"\"\")(1).split(\" \").drop(1).mkString(\" \")\n    }else if(playString.contains(\" in as QB \")){\n        playString.split(\"\"\" in as QB \"\"\")(1).split(\" \").drop(1).mkString(\" \")\n    }else if(playString.contains(\" Change of yard line due to change of possession. \")){\n        playString.split(\"\"\" Change of yard line due to change of possession. \"\"\")(1).split(\" \").drop(1).mkString(\" \")\n    }else if(playString.contains(\" possession. \")){\n        playString.split(\"\"\" possession. \"\"\")(1).split(\" \").drop(1).mkString(\" \") \n    }else if(playString.contains(\"Lateral from 17-Cambell \")){\n        playString.split(\"Lateral from 17-Cambell \")(1).split(\" \").drop(1).mkString(\" \")   \n    }else if(playString.contains(\"Wildcat, direct snap to B.Smith (M.Sanchez at WR). \")){\n        playString.split(\"\"\"\\(M.Sanchez at WR\\). \"\"\")(1).split(\" \").drop(1).mkString(\" \")\n    }else if(playString.contains(\" Orton returns at QB \")){\n        playString.split(\" Orton returns at QB \")(1).split(\" \").drop(1).mkString(\" \")\n    }else if(playString.contains(\"Reverse, Favre hands to Harvin who hands to Moss. \")){\n        playString.split(\"Reverse, Favre hands to Harvin who hands to Moss. \")(1).split(\" \").drop(1).mkString(\" \")\n    }else if(playString.contains(\"Hatcher of Dallas has a neck strain; he may return. \")){\n        playString.split(\"Hatcher of Dallas has a neck strain; he may return. \")(1).split(\" \").drop(1).mkString(\" \")\n    }else{\n        playString.split(\"\"\":\"\"\")(1).split(\" \").drop(1).mkString(\" \")\n    }\n    \n    //println(\"Pass Parser play \u003d \" + play)\n    \n    val pString \u003d playString.split(\"\"\"\\(3rd QB\\) \"\"\").mkString(\"\")\n    \n    val matchedPassString \u003d passMatch.findFirstIn(pString).toList(0)\n    \n    val tempPasser \u003d pString.split(matchedPassString)(0).split(\" \").last\n    //println(\"passer \u003d \" + passer)\n    \n    val passer \u003d if(tempPasser \u003d\u003d \"incomplete\" || tempPasser \u003d\u003d \"to\") pString.split(\" sacked at \")(0).split(\" \").last else tempPasser\n            \n    val tempReceiver \u003d (if(play.contains(\"INTERCEPTED\")){ \n        if(play.contains(\" for \")){\n            play.split(\" for \")(1).split(\" \")(0) \n        }else{\n            \" \"\n        }\n    }else{\n        val x \u003d play.split(\" to \")\n        if(x.length \u003d\u003d 1){\n            \" \"\n        }else{\n            x(1).split(\" \")(0)\n        }\n    }).filterNot(filterCharacter)\n    \n    println(\"tempReceiver \u003d \" + tempReceiver)\n            \n    val receiver \u003d if(tempReceiver(tempReceiver.length - 1) \u003d\u003d \u0027.\u0027){\n        tempReceiver.dropRight(1)\n    }else{\n        tempReceiver\n    }\n    \n    println(\"receiver\u003d \"+ receiver)\n    \n    \n    val complete \u003d if(play.contains(\"incomplete\")) \"false\" else \"true\"\n    val intercepted \u003d if(play.contains(\"INTERCEPTED\")) \"true\" else \"false\"\n    \n    (passer, receiver, complete, intercepted)\n}",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "editorHide": false,
+        "tableHide": false
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1447637235373_-1469748588",
+      "id": "20151115-202715_268679368",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "passMatch: scala.util.matching.Regex \u003d pass (incomplete |)(short |deep |)(left|right|middle|left |right |middle |)\npassParser: (playString: String)(String, String, String, String)\n"
+      },
+      "dateCreated": "Nov 15, 2015 8:27:15 PM",
+      "dateStarted": "Nov 28, 2015 11:18:07 PM",
+      "dateFinished": "Nov 28, 2015 11:18:10 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "//val badparse \u003d parsed.filter(k \u003d\u003e k.size \u003d\u003d 2).map(_(0).toString)\n\nval parsed \u003d rawBlocks.zipWithIndex.\n    filter(line \u003d\u003e !line._1.contains(\"kicks\")).\n    filter(line \u003d\u003e !line._1.contains(\"Timeout\")).\n    filter(line \u003d\u003e !line._1.contains(\"Two-Minute\")).\n    filter(line \u003d\u003e !line._1.contains(\"Punt\")).\n    filter(line \u003d\u003e !line._1.contains(\"punt\")).\n    filter(line \u003d\u003e !line._1.contains(\"punts\")).\n    filter(line \u003d\u003e !line._1.contains(\"field goal\")).\n    filter(line \u003d\u003e !line._1.contains(\"END GAME\")).\n    filter(line \u003d\u003e !line._1.contains(\"extra point\")).\n    filter(line \u003d\u003e !line._1.contains(\"\"\"#\"\"\")).\n    filter(line \u003d\u003e !line._1.contains(\"End of \")).\n    filter(line \u003d\u003e !line._1.contains(\"TWO-POINT\")). //add this back to determine points\n    filter(line \u003d\u003e !line._1.contains(\"injured\")).\n    filter(line \u003d\u003e !line._1.contains(\"*** play under review ***\")).\n    // filter(line \u003d\u003e !line._1.contains(\"Offside on Free Kick\")).\n    // filter(line \u003d\u003e !line._1.contains(\"False Start\")).\n    // filter(line \u003d\u003e !line._1.contains(\"Neutral Zone Infraction\")).\n    filter(line \u003d\u003e !line._1.contains(\"No Play\")). //remove penalties\n    filter(line \u003d\u003e !line._1.contains(\"enforced between downs\")).\n    filter(line \u003d\u003e !line._1.contains(\"Game delayed\")).\n    filter(line \u003d\u003e !line._1.contains(\"BLANK PLAY\")).\n    filter(line \u003d\u003e !line._1.contains(\"resulted in the 10 second run-off\")).\n    filter(line \u003d\u003e line._1.split(\" \").size \u003e 4).\n    filter(line \u003d\u003e !line._1.contains(\"3rd QB - C.Hanie, enters game.\")).\n    filter(line \u003d\u003e !line._1.contains(\"Penalty on CIN-M.Johnson, Defensive Offside, declined.\")).\n    filter(line \u003d\u003e !line._1.contains(\"D.Carr back in at QB.\")).\n    filter(line \u003d\u003e !line._1.contains(\" M.Vick kneels to PHI \")).\n    filter(line \u003d\u003e !line._1.contains(\"Delay of Game\")).\n    filter(line \u003d\u003e !line._1.contains(\"Indianapolis warned for substitution infraction\")).\n    \n    \n    //filter(line \u003d\u003e line._1.contains(\"pass\")).\n    filter(line \u003d\u003e !header.findFirstIn(line._1).isDefined).\n    map{line \u003d\u003e\n        try{\n            val index \u003d line._2\n            val time \u003d indexedHeaders.filter(_._2 \u003c index)\n                                    .reduce((a,b) \u003d\u003e if(a._2 \u003e b._2) a else b)._1\n            val year \u003d time.split(\" \")(1)\n            val week \u003d time.split(\" \")(3)\n        \n            val playString \u003d line._1\n            val possession \u003d playString.split(\" \")(0).filterNot(filterCharacter)\n            \n            val firstTuple \u003d playString.split(\"\"\"\"\\)\"\"\")(0) split(\" \")\n            val firstLine \u003d playString.split(\"\"\"\\)\"\"\")(0)\n            \n            println(\"\")\n            println(\"playString \u003d \" + playString)\n            \n            val sideOf50 \u003d if(firstLine.contains(\"50\")) possession else playString.split(\" \")(1)\n            //val sideOf50 \u003d \"\"\n            \n            println(\"sideOf50 \u003d \" + sideOf50)\n            \n            val yardLine \u003d if(firstLine.contains(\"50\")){\n                \"50\"\n            }else{        //50 yard line\n                playString.split(\" \")(2).filterNot(filterCharacter) \n            }\n            \n            println(\"yardLine \u003d \" + yardLine)\n            \n            val (down, togo) \u003d if(firstLine.contains(\"50\")){\n                if(firstTuple(2) \u003d\u003d \"50,\"){\n                    (playString.split(\" \")(4), playString.split(\" \")(6).filterNot(filterCharacter)) \n                }else{\n                    (playString.split(\" \")(3), playString.split(\" \")(5).filterNot(filterCharacter))\n                }\n            }else{\n                (playString.split(\" \")(4), playString.split(\" \")(6).filterNot(filterCharacter))\n            }\n            \n            println(\"down \u003d \" + down)\n            println(\"togo \u003d \" + togo)\n            \n            val quarterTime \u003d playString.split(\"\"\"\\(\"\"\")(2).split(\" \")(0).filterNot(filterCharacter)\n            \n            println(\"quarterTime \u003d \" + quarterTime)\n            \n            val play \u003d if(playString.contains(\") Official requested time be reset to \")){\n                playString.split(\"\"\" Official requested time be reset to \"\"\")(1).split(\" \").drop(1).mkString(\" \") \n            }else{\n                playString.split(\"\"\":\"\"\")(1).split(\" \").drop(1).mkString(\" \")\n            }\n            \n            println(\"play \u003d \" + play)\n                 \n            val shotgun \u003d if(play.contains(\"Shotgun\")) \"true\" else \"false\"\n            \n            val matchedPassString \u003d if(passMatch.findFirstIn(line._1).isDefined) passMatch.findFirstIn(line._1).toList(0) else \"None\"\n            \n            val (passer, receiver, complete, intercepted) \u003d if(passMatch.findFirstIn(line._1).isDefined \u0026\u0026 !line._1.split(matchedPassString)(0).split(\" \").last.contains(\"ackward\")) passParser(playString) else (\"\", \"\", \"\", \"\")\n            //val (passer, receiver, complete, intercepted) \u003d (\"\", \"\", \"\", \"\")\n            \n            val noHuddle \u003d if(play.contains(\"No Huddle\")) \"true\" else \"false\"\n            \n            val distance \u003d if(play.contains(\" deep \")) \"deep\" else if(play.contains(\" short \")) \"short\" else \"\"\n            val direction \u003d if(play.contains(\" left\")) \"left\" else if(play.contains(\" right \")) \"right\" else if(play.contains(\" middle \")) \"middle\" else \"\"\n            val runDirection \u003d if(play.contains(\" end \")) \"end\" else if(play.contains(\" up the middle \")) \"middle\" else if(play.contains(\" guard \" )) \"guard\" else if(play.contains(\" tackle \")) \"tackle\" else \"\"\n            \n            val tempString \u003d play.split(\"\"\"\\)\"\"\")\n            //val runner \u003d if(play.contains(\"pass\")) \"\" else  tempString(1).split(\" \")(0)\n            val runner \u003d play\n            \n            println(\"Trying yards gained\")\n            \n            val yardsGained \u003d if(!play.contains(\"incomplete\") \n                                \u0026\u0026 !play.contains(\"INTERCEPTED\") \n                                \u0026\u0026 !play.contains(\"no gain\")\n                                \u0026\u0026 !play.contains(\"spiked\")\n                                \u0026\u0026 !play.contains(\"attempted backward pass\")){\n                                    val tempSplit \u003d play.split(\" yard\")\n                                    \n                                    if(!play.contains(\" for \")){\n                                        \"0\"\n                                    }else if(play.contains(\"Change of yard line\") || play.contains(\"change in yard line\") || play.contains(\"Change in yard line\")){\n                                        tempSplit(1).split(\" for \").last\n                                    }else{\n                                        tempSplit(0).split(\" for \").last\n                                    }\n                                } else {\n                                    \"0\"\n                                }\n            println(\"yardsGaines \u003d \" + yardsGained)\n            \n            val yardsToGoalLine \u003d if(sideOf50 \u003d\u003d possession){\n                (100 - yardLine.toInt)\n            }else{\n                yardLine\n            }\n            \n            val quarter \u003d playString.split(\" \")(3).filterNot(filterCharacter).filterNot(\"\"\"Q\"\"\".toSet)\n            \n            val touchdown \u003d if(play.contains(\"TOUCHDOWN\")) \"true\" else \"false\"\n            \n            val fumble \u003d if(play.contains(\"FUMBLE\")) \"true\" else \"false\"\n            \n            val sacked \u003d if(play.contains(\"sacked\")) \"true\" else \"false\"\n            \n            val spiked \u003d if(play.contains(\"spiked\")) \"true\" else \"false\"\n            \n            Array(possession, sideOf50, yardLine, yardsToGoalLine, quarter, down, togo, quarterTime, passer, shotgun, complete, distance, direction, receiver, yardsGained, intercepted, noHuddle, touchdown, fumble, sacked, spiked, runDirection, playString)\n        }catch{\n            case e: Exception \u003d\u003e Array(e, line._1)\n        }\n\n        \n            //Some(line, 0)\n            \n            \n}.filter(k \u003d\u003e k.size \u003e 1)//.map(_.mkString(\",\")).foreach(println)\n\n//parsed.cache",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "editorHide": false
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1448479938123_-581218905",
+      "id": "20151125-143218_613693016",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "parsed: org.apache.spark.rdd.RDD[Array[_ \u003e: java.io.Serializable]] \u003d MapPartitionsRDD[34] at filter at \u003cconsole\u003e:197\n"
+      },
+      "dateCreated": "Nov 25, 2015 2:32:18 PM",
+      "dateStarted": "Nov 28, 2015 11:18:09 PM",
+      "dateFinished": "Nov 28, 2015 11:18:15 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "val attributes \u003d Array(\"possession\",\"sideOf50\",\"yardLine\",\"yardsToGoalLine\",\"quarter\",\"down\",\"togo\",\"quarterTime\",\"passer\",\"shotgun\",\"complete\",\"distance\",\"direction\",\"receiver\",\"yardsGained\",\"intercepted\",\"noHuddle\",\"touchdown\",\"fumble\",\"sacked\",\"spiked\",\"runDirection\", \"playString\")",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        }
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1448636448101_-1628047911",
+      "id": "20151127-100048_847097445",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "attributes: Array[String] \u003d Array(possession, sideOf50, yardLine, yardsToGoalLine, quarter, down, togo, quarterTime, passer, shotgun, complete, distance, direction, receiver, yardsGained, intercepted, noHuddle, touchdown, fumble, sacked, spiked, runDirection, playString)\n"
+      },
+      "dateCreated": "Nov 27, 2015 10:00:48 AM",
+      "dateStarted": "Nov 28, 2015 11:18:13 PM",
+      "dateFinished": "Nov 28, 2015 11:18:15 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "parsed.filter(k \u003d\u003e k(14) \u003d\u003d \"substitution infraction\").map(_(22)).collect.foreach(println)\n\n//22 \u003d\u003d playstring",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [
+            {
+              "name": "possession",
+              "index": 0.0,
+              "aggr": "sum"
+            }
+          ],
+          "values": [
+            {
+              "name": "sideOf50",
+              "index": 1.0,
+              "aggr": "sum"
+            }
+          ],
+          "groups": [],
+          "scatter": {
+            "xAxis": {
+              "name": "possession",
+              "index": 0.0,
+              "aggr": "sum"
+            },
+            "yAxis": {
+              "name": "sideOf50",
+              "index": 1.0,
+              "aggr": "sum"
+            }
+          }
+        },
+        "tableHide": false,
+        "editorHide": false
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1448547316663_330023480",
+      "id": "20151126-091516_1160008122",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "(IND, IND 41, Q2, 1 and 10) (8:45) Indianapolis warned for substitution infraction\n"
+      },
+      "dateCreated": "Nov 26, 2015 9:15:16 AM",
+      "dateStarted": "Nov 28, 2015 11:06:47 PM",
+      "dateFinished": "Nov 28, 2015 11:07:22 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "parsed.map(_(19)).countByValue.foreach(println)",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "tableHide": false,
+        "editorHide": false
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1448550824017_-2018459736",
+      "id": "20151126-101344_1357556021",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "(true,7068)\n(false,186296)\n"
+      },
+      "dateCreated": "Nov 26, 2015 10:13:44 AM",
+      "dateStarted": "Nov 28, 2015 11:13:51 PM",
+      "dateFinished": "Nov 28, 2015 11:14:25 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "import java.io._\n\nval csvToWrite \u003d attributes.mkString(\",\") + \"\\n\" + parsed.map(_.mkString(\",\")).collect.mkString(\"\\n\") \n\nval newFileLocation \u003d \"/Users/asobran/Desktop/\" + \"playByPlay.csv\"\n    val pw \u003d new PrintWriter(new File(newFileLocation))\n    pw.write(csvToWrite)\n    pw.close",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        }
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1448750197249_816117078",
+      "id": "20151128-173637_516612091",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "import java.io._\ncsvToWrite: String \u003d \npossession,sideOf50,yardLine,yardsToGoalLine,quarter,down,togo,quarterTime,passer,shotgun,complete,distance,direction,receiver,yardsGained,intercepted,noHuddle,touchdown,fumble,sacked,spiked,runDirection,playString\nPIT,PIT,42,58,1,1,10,14:53,B.Roethlisberger,false,true,short,left,H.Ward,5,false,false,false,false,false,false,,(PIT, PIT 42, Q1, 1 and 10) (14:53) B.Roethlisberger pass short left to H.Ward to PIT 47 for 5 yards (C.Hope).\nPIT,PIT,47,53,1,2,5,14:16,,false,,,right,,-3,,false,false,false,false,false,end,(PIT, PIT 47, Q1, 2 and 5) (14:16) W.Parker right end to PIT 44 for -3 yards (S.Tulloch).\nTEN,TEN,2,98,1,1,10,13:16,,false,,,middle,,0,,false,false,false,false,false,middle,(TEN, TEN 2, Q1, 1 and 10) (13:16) C.Johnson up the middle to TEN 2 for no gain (B.K...newFileLocation: String \u003d /Users/asobran/Desktop/playByPlay.csv\npw: java.io.PrintWriter \u003d java.io.PrintWriter@147bd431\n"
+      },
+      "dateCreated": "Nov 28, 2015 5:36:37 PM",
+      "dateStarted": "Nov 28, 2015 11:18:15 PM",
+      "dateFinished": "Nov 28, 2015 11:18:47 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "parsed.count",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        }
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1448736155687_-2059226502",
+      "id": "20151128-134235_269735903",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "res402: Long \u003d 109720\n"
+      },
+      "dateCreated": "Nov 28, 2015 1:42:35 PM",
+      "dateStarted": "Nov 28, 2015 1:42:43 PM",
+      "dateFinished": "Nov 28, 2015 1:43:21 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "editorHide": false
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1447061141244_-828212740",
+      "id": "20151109-042541_1227354218",
+      "dateCreated": "Nov 9, 2015 4:25:41 AM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    }
+  ],
+  "name": "Parse Game By Game",
+  "id": "2B25UNZ8J",
+  "angularObjects": {},
+  "config": {
+    "looknfeel": "default"
+  },
+  "info": {}
+}
