@@ -16,6 +16,7 @@ def selectTeamAndWeek(data, team, year, week):
 	return data[(data['year']==year)&(nfl['possession']==team) & (nfl['week']==week)]
 
 def timeToSeconds(s):
+	print(s)
 	tup = s.split(":")
 	if(tup[0] == ''):
 		minute = 0
@@ -51,18 +52,18 @@ label = [temporalSubset(car, j, 20) for j in xrange(40,41)]
 print label
 
 
-pipeline.fit(train, label)
+# pipeline.fit(train, label)
 
 
 
-nn = Classifier(
-    layers=[
-        Layer("Rectifier", units=100),
-        Layer("Linear")],
-    learning_rate=0.02,
-    n_iter=10)
+# nn = Classifier(
+#     layers=[
+#         Layer("Rectifier", units=100),
+#         Layer("Linear")],
+#     learning_rate=0.02,
+#     n_iter=10)
 
-nn.fit(train, label)
+# nn.fit(train, label)
 
 
 '''year
