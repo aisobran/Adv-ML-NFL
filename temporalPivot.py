@@ -1,5 +1,16 @@
 import pandas as pd
 import numpy as np
+from sknn.mlp import Classifier, Layer
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
+
+oneHot = OneHotEncoder()
+
+pipeline = Pipeline([
+        ('min/max scaler', MinMaxScaler(feature_range=(0.0, 1.0))),
+        ('neural network', Classifier(layers=[Layer("Softmax")], n_iter=25))])
+
+
 
 def selectTeamAndWeek(data, team, year, week):
 	return data[(data['year']==year)&(nfl['possession']==team) & (nfl['week']==week)]
@@ -34,12 +45,24 @@ nfl['quarterTime'] = nfl['quarterTime'].map(timeToSeconds)
 subset = nfl[['year', 'week', 'possession', 'yardsToGoalLine', 'quarter', 'down', 'togo', 'quarterTime', 'shotgun', 'complete', 'distance', 'direction', 'yardsGained', 'intercepted', 'noHuddle', 'touchdown', 'fumble', 'sacked', 'spiked', 'runDirection']]
 car = selectTeamAndWeek(subset, "CAR", 2015, 4)
 
-newListOfLists = [temporalSubset(car, j, 3) for j in xrange(20, 40)]
+train = [temporalSubset(car, j, 20) for j in xrange(20, 40)]
+label = [temporalSubset(car, j, 20) for j in xrange(40,41)]
 
-pivotdf = pd.DataFrame(newListOfLists)
+print label
 
 
-print pivotdf
+pipeline.fit(train, label)
+
+
+
+nn = Classifier(
+    layers=[
+        Layer("Rectifier", units=100),
+        Layer("Linear")],
+    learning_rate=0.02,
+    n_iter=10)
+
+nn.fit(train, label)
 
 
 '''year
