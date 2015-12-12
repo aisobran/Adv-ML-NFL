@@ -22,5 +22,3 @@ def timeToSeconds(s):
 nfl = pd.read_csv("playByPlay.csv",header=0)
 nfl['quarterTime'] = nfl['quarterTime'].map(timeToSeconds)
 nflData = nfl[['year', 'week', 'possession', 'yardsToGoalLine', 'quarter', 'down', 'togo', 'quarterTime', 'shotgun', 'complete', 'distance', 'direction', 'yardsGained', 'intercepted', 'noHuddle', 'touchdown', 'fumble', 'sacked', 'spiked', 'runDirection']]
-nflData["down"] = nflData["Down"].astype('category')
-nflData["distance"] = nflData["distance"].astype('category')
