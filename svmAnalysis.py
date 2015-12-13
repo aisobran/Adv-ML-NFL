@@ -9,7 +9,8 @@ import pandas as pd
 import numpy as np
 import math
 from sklearn.hmm import GaussianHMM
-from sklearn.pipeline import Pipeline
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 
 oneHot = OneHotEncoder()
@@ -64,24 +65,34 @@ for category in categoricalVariables:
 oneHotPrep = subset.drop(['year', 'week', 'possession'],axis=1)
 oneHot.fit(oneHotPrep[categoricalVariables])
 #[5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16]
-
-car = selectTeamAndWeek(subset, "CAR", 2015, 4)
+car = []
+for year in subset.year.unique():
+    for week in subset.week.unique():
+        car.append(selectTeamAndWeek(subset, "CAR", year, week))
+        
 
 def tranformPass(x):
 	if math.isnan(lencoders['complete'].inverse_transform(x)):
 		return 0
 	else:
 		return 1
-
-train = [temporalSubset(car, j, 20, oneHot) for j in xrange(20, len(car) - 1)]
+  
+train=[]
+label=[]
+for data in car:
+    tr = [temporalSubset(data, j, 25, oneHot) for j in xrange(25, len(data) - 1)]
+    train.append(tr)
 #print car['complete'].map(lencoders['complete'].inverse_transform)
-label = car['complete'].map(tranformPass)[21:len(car)]
+    la = data['complete'].map(tranformPass)[26:len(data)]
+    label.append(la)
 
 print label
 
 t = np.array(train)
 l = np.array(label)
 
-model = GaussianHMM(n_components=2,n_iter=100)
-model.fit(t)
-model.predict(t)
+model = SVC()
+model.fit(t[:-3],l[:-3])
+pred = model.predict(t[-3:])
+
+accuracy_score(l[-3:],pred)
