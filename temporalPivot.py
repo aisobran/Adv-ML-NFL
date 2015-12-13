@@ -1,88 +1,99 @@
 import pandas as pd
 import numpy as np
 import math
-from sknn.mlp import Classifier, Layer
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import MinMaxScaler, OneHotEncoder, LabelEncoder
-
-oneHot = OneHotEncoder()
-le = LabelEncoder()
-
-def selectTeamAndWeek(data, team, year, week):
-	return data[(data['year']==year)&(nfl['possession']==team) & (nfl['week']==week)]
-
-def timeToSeconds(s):
-	tup = s.split(":")
-	if(tup[0] == ''):
-		minute = 0
-	else: 
-		minute = int(tup[0])
-	return minute * 60 + int(tup[1])
-
-def temporalSubset(data, i, length, oh):
-	categoricalVariables = ['shotgun', 'complete', 'distance', 'direction', 'intercepted', 'noHuddle', 'touchdown', 'fumble', 'sacked', 'spiked', 'runDirection']
-	continuousVariables = ['yardsToGoalLine', 'quarter', 'down', 'togo', 'quarterTime', 'yardsGained']
-
-	if(i < length):
-		return None
-	else:
-		tSet = []
-		count = 0
-		for x in xrange(i - length, i):
-			categorical = []
-			for  d in oh.transform(data[categoricalVariables].iloc[i]).toarray()[0]:
-				categorical.append(d)
-			continuous = []
-			for d in data[continuousVariables].iloc[i]:
-				continuous.append(d)
-			print categorical
-			print continuous
-			tSet = tSet + categorical + continuous			#is now considered part of one team
-		return tSet
+from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 
 
-nfl = pd.read_csv("playByPlay.csv")
-nfl['quarterTime'] = nfl['quarterTime'].map(timeToSeconds)
 
-subset = nfl[['year', 'week', 'possession', 'yardsToGoalLine', 'quarter', 'down', 'togo', 'quarterTime', 'shotgun', 'complete', 'distance', 'direction', 'yardsGained', 'intercepted', 'noHuddle', 'touchdown', 'fumble', 'sacked', 'spiked', 'runDirection']]
 
-categoricalVariables = ['shotgun', 'complete', 'distance', 'direction', 'intercepted', 'noHuddle', 'touchdown', 'fumble', 'sacked', 'spiked', 'runDirection']
-lencoders = {}
+#data will try to be altered in place
+class playByPlay(object):
+	
+	def __init__(s):	#will initialize dataset and prepare labelencoding, onehot coding, and subsetting
+		s.oneHot = OneHotEncoder()
+		s.le = LabelEncoder()	
+		s.nfl = pd.read_csv("playByPlay.csv")
+		s.nfl['quarterTime'] = s.nfl['quarterTime'].map(s.timeToSeconds)
+		s.subset = s.nfl[['year', 'week', 'possession', 'yardsToGoalLine', 'quarter', 'down', 'togo', 'quarterTime', 'shotgun', 'complete', 'distance', 'direction', 'yardsGained', 'intercepted', 'noHuddle', 'touchdown', 'fumble', 'sacked', 'spiked', 'runDirection']]
+		s.categoricalVariables = ['shotgun', 'complete', 'distance', 'direction', 'intercepted', 'noHuddle', 'touchdown', 'fumble', 'sacked', 'spiked', 'runDirection']
+		s.continuousVariables = ['yardsToGoalLine', 'quarter', 'down', 'togo', 'quarterTime', 'yardsGained']
+		s.lencoders = {}
+		for category in s.categoricalVariables:
+			s.lencoders[category] = LabelEncoder()
+			s.lencoders[category].fit(s.subset[category])
+			s.subset[category]=s.lencoders[category].transform(s.subset[category])
 
-for category in categoricalVariables:
-	lencoders[category] = LabelEncoder()
-	lencoders[category].fit(subset[category])
-	subset[category]=lencoders[category].transform(subset[category])
+		s.oneHot.fit(s.subset[s.categoricalVariables])
+		#s.oneHotPrep = s.subset.drop(['year', 'week', 'possession'],axis=1)
+		s.workingDataSet = pd.DataFrame()
+		
 
-oneHotPrep = subset.drop(['year', 'week', 'possession'],axis=1)
-oneHot.fit(oneHotPrep[categoricalVariables])
+	def select(s, team, year=0):	#select a team with optional year argument
+		if year == 0:
+			s.workingDataSet = s.subset[(s.subset['possession']==team)]
+		else: 
+			s.workingDataSet = s.subset[(s.subset['possession']==team) & (s.subset['year']==year)]
+
+		s.workingDataSet = s.workingDataSet.drop(['year', 'week', 'possession'],axis=1)
+
+	def timeToSeconds(s, time): #convert quartertime to time in seconds
+		tup = time.split(":")
+		if(tup[0] == ''):
+			minute = 0
+		else: 
+			minute = int(tup[0])
+		return minute * 60 + int(tup[1]) 
+
+	def temporalSubset(s, i, length):	#will grab the temporal subset at index i 
+		if(i < length):					#and length step backwards
+			return None
+		else:
+			tSet = []
+			count = 0
+			for x in xrange(i - length, i):
+				categorical = []
+				for  d in s.oneHot.transform(s.workingDataSet[s.categoricalVariables].iloc[i]).toarray()[0]:
+					categorical.append(d)
+				continuous = []
+				for d in s.workingDataSet[s.continuousVariables].iloc[i]:
+					continuous.append(d)
+				#print categorical
+				#print continuous
+				tSet = tSet + categorical + continuous			#is now considered part of one team
+			return tSet	
+
+	def tranformPass(s, x):			#transforms to 0 for run and 1 for pass
+		if math.isnan(s.lencoders['complete'].inverse_transform(x)):
+			return 0
+		else:
+			return 1
+
+	def temporal(s, length):		#grab the temporal set of the current workingset
+		learningData = {}			#return object with train and label data
+		learningData['train'] = np.array([s.temporalSubset(j, length) for j in xrange(length, len(s.workingDataSet) - 1)])
+		learningData['label'] = np.array(s.workingDataSet['complete'].map(s.tranformPass)[(length+1):len(s.workingDataSet)])
+		return learningData
+
+
+# def selectTeamAndWeek(data, team, year, week):
+# 	return data[(data['year']==year)&(nfl['possession']==team) & (nfl['week']==week)]
+
 #[5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16]
 
-car = selectTeamAndWeek(subset, "CAR", 2015, 4)
+#car = selectTeamAndWeek(subset, "CAR", 2015, 4)
 
-def tranformPass(x):
-	if math.isnan(lencoders['complete'].inverse_transform(x)):
-		return 0
-	else:
-		return 1
 
-train = [temporalSubset(car, j, 20, oneHot) for j in xrange(20, len(car) - 1)]
+
+
 #print car['complete'].map(lencoders['complete'].inverse_transform)
-label = car['complete'].map(tranformPass)[21:len(car)]
-
-print label
-
-t = np.array(train)
-l = np.array(label)
-
-pipeline = Pipeline([
-        ('min/max scaler', MinMaxScaler(feature_range=(0.0, 1.0))),
-        ('neural network', Classifier(layers=[Layer("Softmax")], n_iter=25))])
-
-pipeline.fit(t, l)
 
 
-print pipeline.predict(t)
+# print label
+
+# t = np.array(train)
+# l = np.array(label)
+
+
 
 
 #print(train)
