@@ -27,7 +27,8 @@ def neuralCombo(data):
 
 	learningRate = [0.05, 0.005, 0.001, 0.0001, 0.00001]
 	units = [100, 200]
-	type = ['Rectifier', 'Sigmoid', 'Sigmoid', 'Tanh', 'Linear', 'Softmax', 'Gaussian']
+	#type = ['Rectifier', 'Sigmoid', 'Sigmoid', 'Tanh', 'Linear', 'Softmax', 'Gaussian']
+	type = ['Rectifier', 'Linear', 'Gaussian']
 	iterations=[25, 100]
 
 	best = {}
@@ -79,11 +80,11 @@ def neuralCombo(data):
 									best = testModel(data, pipeline, best, l, str(u0) +","+ str(u1) + ","+str(u2), type0+","+type1+","+type2, i)
 
 	print "bestOverall===================================="
-	print "trainingAccuracy" + " = "  + best['trainingAccuracy']
-	print "learningRate" + " = "  + best['units']
-	print "units" + " = "  + best['type']
-	print "type" + " = "  + best['iterations']
-	print "iterations" + " = "  + best['learningRate']
+	print "trainingAccuracy" + " = "  + str(best['trainingAccuracy'])
+	print "learningRate" + " = "  + str(best['units'])
+	print "units" + " = "  + str(best['type'])
+	print "type" + " = "  + str(best['iterations'])
+	print "iterations" + " = "  + str(best['learningRate'])
 
 def testModel(data, model, b, l, u, t, i ):
 
@@ -148,7 +149,7 @@ def testRunner():
         	Layer("Softmax")],
         learning_rate=0.001, 
         n_iter=25))])
-	pbp.testingFrameworkByTeam(pipeline, 2010, 40, 0.6)
+	pbp.testingFrameworkByTeam(pipeline, 2015, 40, 0.6)
 
 def unitSizeAnalysis(data):
 
@@ -187,7 +188,7 @@ def unitSizeAnalysis(data):
 testRunner()
 #pbp.test()
 
-#neuralCombo(preppedData)
+neuralCombo(preppedData)
 #autoEncoderOptimization(preppedData)
 
 
