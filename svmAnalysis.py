@@ -44,6 +44,6 @@ def testRunner():
 	pipeline = Pipeline([
         ('min/max scaler', MinMaxScaler(feature_range=(0.0, 1.0))),
         ('svm',SVC(kernel='poly',C=100,degree=2))])
-	pbp.testingFrameworkByTeam(pipeline,year=2012)
+	pbp.testingFrameworkByTeam(pipeline,year=2009)
 
 testRunner()
