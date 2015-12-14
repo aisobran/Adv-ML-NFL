@@ -78,6 +78,7 @@ class playByPlay(object):
 	def testingFrameworkByTeam(s, model, year=2015, length=20, dataSplit=0.6):	#usage: length is number of past timepoints back
 		teamNames = pd.unique(s.nfl['possession'].values.ravel())				#dataSplit is the % split based on 
 		teamTestAccuracyTracker ={}
+		print("Team,TestAccuracy,TrainAccuracy,PlayDistribution")
 		for name in teamNames:
 			s.workingDataSet = s.subset[(s.subset['possession']==name)]
 			s.workingDataSet = s.workingDataSet[(s.workingDataSet['year']==year)]
@@ -90,12 +91,24 @@ class playByPlay(object):
 
 			model.fit(trainingSplit['train'], trainingSplit['label'])
 			acc = accuracy_score(testingSplit['label'], model.predict(testingSplit['train']))
+			trainAcc = accuracy_score(trainingSplit['label'], model.predict(trainingSplit['train']))
+
+			playCounts = np.bincount(testingSplit['label'])
+			playDistribution = max(playCounts)/float(sum(playCounts))
 
 			teamTestAccuracyTracker[name] = acc
-			print name + "," + str(acc)
+			print name + "," + str(acc) + "," + str(trainAcc) + "," + str(playDistribution)
 
 		# for key in teamTestAccuracyTracker:
 		# 	print key + "," + str(teamTestAccuracyTracker[key])
+
+	def test(s):
+		#s.workingDataSet = s.subset[(s.subset['possession']=='CAR') & s.workingDataSet['year']==2015]
+		allTemporalData = s.temporal(10)
+		print(np.bincount(allTemporalData['label'])[0])
+
+
+
 
 
 

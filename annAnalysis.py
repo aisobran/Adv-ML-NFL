@@ -147,9 +147,10 @@ def testRunner():
         	Layer("Softmax")],
         learning_rate=0.001, 
         n_iter=25))])
-	pbp.testingFrameworkByTeam(pipeline)
+	pbp.testingFrameworkByTeam(pipeline, 2014, 40, 0.6)
 
 testRunner()
+#pbp.test()
 
 #neuralCombo(preppedData)
 #autoEncoderOptimization(preppedData)
