@@ -8,16 +8,11 @@ Created on Mon Dec 14 12:47:06 2015
 import pandas as pd
 import matplotlib.pyplot as plt
 
-data = pd.read_csv('SVMresultsByTeam.csv',header=0)
+files = ['2009.csv','2010.csv','2011.csv','2012.csv','2013.csv','2014.csv','2015.csv']
 
-
-data.plot(x='Team',kind = 'bar',subplots=True,sharex=True,layout=(2,2),legend=True,figsize=(14,12))
-plt.savefig('YearlyAccuracies.png')
-
-mean = pd.DataFrame(data['Team'])
-mean.columns = ['Team']
-mean['Accuracy'] = data.mean(axis=1)
-
-
-mean.plot(x='Team',y='Accuracy',kind='bar')
-plt.savefig('Accuracy.png')
+data={}
+for f in files:
+    year = f.split('.')[0]
+    data[year] = pd.read_csv('svmResults/'+f,header=0)
+    data[year].plot(figsize=(10,10))
+    plt.savefig('svmResults/Accuracy'+year+'.png')
