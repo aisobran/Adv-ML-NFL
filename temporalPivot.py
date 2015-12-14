@@ -107,6 +107,8 @@ class playByPlay(object):
 		allTemporalData = s.temporal(10)
 		print(np.bincount(allTemporalData['label'])[0])
 
+	
+
 
 
 

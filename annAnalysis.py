@@ -1,4 +1,5 @@
 import pickle
+import math
 from sknn.mlp import Classifier, Layer
 from sknn import ae
 from sklearn.pipeline import Pipeline
@@ -9,8 +10,9 @@ from sklearn.grid_search import GridSearchCV
 from sklearn.metrics import classification_report
 
 
+
 pbp = playByPlay()	#instantiate object
-pbp.select("CAR", 2015)	#select team and year, this is done in place 
+pbp.select("CAR", 2014)	#select team and year, this is done in place 
 preppedData = pbp.temporal(20)		#this will return the training and test data
 									#as dict preppedData['train'], preppedData['label']
 
@@ -136,7 +138,6 @@ def autoEncoderOptimization(data):
 
 	print accuracy_score(data["label"], prediction)
 
-
 def testRunner():
 	pipeline = Pipeline([
         ('min/max scaler', MinMaxScaler(feature_range=(0.0, 1.0))),
@@ -147,8 +148,42 @@ def testRunner():
         	Layer("Softmax")],
         learning_rate=0.001, 
         n_iter=25))])
-	pbp.testingFrameworkByTeam(pipeline, 2014, 40, 0.6)
+	pbp.testingFrameworkByTeam(pipeline, 2010, 40, 0.6)
 
+def unitSizeAnalysis(data):
+
+	units = range(3,35) + [200, 300, 400, 500, 600, 700, 800, 900]
+
+	validationSplit = 0.6
+
+	split = math.floor(len(data['label']) * validationSplit)
+
+	trainingSplit = {'train': data['train'][:split], 'label': data['label'][:split]}
+	testingSplit = {'train': data['train'][split:], 'label': data['label'][split:]}
+
+	for i in units:	
+		pipeline = Pipeline([
+	        ('min/max scaler', MinMaxScaler(feature_range=(0.0, 1.0))),
+	        ('neural network', Classifier(layers=[
+	        	Layer("Rectifier", units=i),
+	        	Layer("Gaussian", units=i),
+	        	#Layer("Maxout", units=100, pieces=2),
+	        	Layer("Softmax")],
+	        learning_rate=0.001, 
+	        n_iter=25))])
+
+		pipeline.fit(trainingSplit['train'], trainingSplit['label'])
+		testAcc = accuracy_score(testingSplit['label'], pipeline.predict(testingSplit['train']))
+		trainingAcc = accuracy_score(trainingSplit['label'], pipeline.predict(trainingSplit['train']))
+
+		print str(i) + "," + str(testAcc) + "," + str(trainingAcc)
+
+
+
+
+
+
+#unitSizeAnalysis(preppedData)
 testRunner()
 #pbp.test()
 

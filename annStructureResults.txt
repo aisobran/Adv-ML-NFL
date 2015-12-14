@@ -39,3 +39,9 @@ learningRate = 1e-05
 units = 200,200
 type = Rectifier,Linear
 iterations = 25
+
+trainingAccuracy = 0.671264367816
+learningRate = 1e-05
+units = 200,100,100
+type = Rectifier,Gaussian,Linear
+iterations = 100
