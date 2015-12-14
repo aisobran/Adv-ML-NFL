@@ -1,0 +1,29 @@
+trainingAccuracy = 0.666666666667
+learningRate = 0.0001
+units = 200,200,100
+type = Rectifier,Gaussian,Gaussian
+iterations = 25
+
+trainingAccuracy = 0.67816091954
+learningRate = 0.0001
+units = 200,200
+type = Rectifier,Gaussian
+iterations = 25
+
+trainingAccuracy = 0.671264367816
+learningRate = 0.0001
+units = 200,100,100
+type = Rectifier,Gaussian,Gaussian
+iterations = 25
+
+trainingAccuracy = 0.671264367816
+learningRate = 0.0001
+units = 200,100,100
+type = Rectifier,Gaussian,Linear
+iterations = 25
+
+trainingAccuracy = 0.67816091954
+learningRate = 0.0001
+units = 200,200
+type = Rectifier,Linear
+iterations = 25

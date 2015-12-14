@@ -1,5 +1,6 @@
 import pickle
 from sknn.mlp import Classifier, Layer
+from sknn import ae
 from sklearn.pipeline import Pipeline
 from temporalPivot import playByPlay
 from sklearn.preprocessing import MinMaxScaler
@@ -7,11 +8,11 @@ from sklearn.metrics import accuracy_score
 from sklearn.grid_search import GridSearchCV
 from sklearn.metrics import classification_report
 
+
 pbp = playByPlay()	#instantiate object
 pbp.select("CAR", 2015)	#select team and year, this is done in place 
 preppedData = pbp.temporal(20)		#this will return the training and test data
 									#as dict preppedData['train'], preppedData['label']
-
 
 def neuralCombo(data):
 	pipeline = Pipeline([
@@ -22,35 +23,148 @@ def neuralCombo(data):
         	Layer("Softmax")], 
         	n_iter=25))])
 
-	grid = [		#left maxout out
-		{'nn__learning_rate':[0.05, 0.01, 0.005, 0.001, 0.0001, 0.00001],
-			'nn__hidden0__units': [4, 8, 10, 50, 100, 200], 
-			'nn__hidden0__type':['Rectifier', 'Sigmoid', 'Sigmoid', 
-						'Tanh', 'ExpLin', 'Linear', 'Softmax', 'Gaussian'],
-			'nn__hidden1__units': [4, 8, 10, 50, 100, 200], 
-			'nn__hidden1__type':['Rectifier', 'Sigmoid', 'Sigmoid', 
-						'Tanh', 'ExpLin', 'Linear', 'Softmax', 'Gaussian'],			
-		}
-	]
+	learningRate = [0.05, 0.005, 0.001, 0.0001, 0.00001]
+	units = [100, 200]
+	type = ['Rectifier', 'Sigmoid', 'Sigmoid', 'Tanh', 'Linear', 'Softmax', 'Gaussian']
+	iterations=[25, 100]
 
-	gs = GridSearchCV(pipeline, param_grid=grid)
-	gs.fit(data['train'], data['label'])
+	best = {}
+	best['learningRate'] = 0.05
+	best['units'] = 4
+	best['type'] = 'Rectifier'
+	best['iterations'] = 5
+	best['trainingAccuracy'] = 0.0
 
-	print "Best parameters set found on development set:"
-	print gs.best_params_ 
-	print("Grid scores on development set:")
-	for params, mean_score, scores in gs.grid_scores_:
-		print("%0.3f (+/-%0.03f) for %r"
-              % (mean_score, scores.std() * 2, params))
-	print("Detailed classification report:")
-	print("The scores are computed on the full evaluation set.")
-	y_true, y_pred = y_test, gs.predict(data['train'])
-	print(classification_report(y_true, y_pred))
+	for l in learningRate:
+		for i in iterations:
+			for type0 in type:
+				for u0 in units:
 
-	with open('gs_data.pk1', 'wb') as output:
-		pickle.dump(gs, output, pickle.HIGHEST_PROTOCOL)
+					pipeline = Pipeline([
+			        ('min/max scaler', MinMaxScaler(feature_range=(0.0, 1.0))),
+			        ('nn', Classifier(layers=[
+			        	Layer(type0, units=u0),
+			        	Layer("Softmax")], 
+			        	n_iter=i))])
 
-neuralCombo(preppedData)
+					best = testModel(data, pipeline, best, l, u0, type0, i)
+
+					for type1 in type:
+						for u1 in units:
+							
+							pipeline = Pipeline([
+					        ('min/max scaler', MinMaxScaler(feature_range=(0.0, 1.0))),
+					        ('nn', Classifier(layers=[
+					        	Layer(type0, units=u0),
+					        	Layer(type1, units=u1),
+					        	Layer("Softmax")], 
+					        	n_iter=i))])
+
+							best = testModel(data, pipeline, best, l, str(u0) +","+ str(u1), type0+","+type1, i)
+
+							for type2 in type:
+								for u2 in units:
+									
+									pipeline = Pipeline([
+							        ('min/max scaler', MinMaxScaler(feature_range=(0.0, 1.0))),
+							        ('nn', Classifier(layers=[
+							        	Layer(type0, units=u0),
+							        	Layer(type1, units=u1),
+							        	Layer(type2, units=u2),
+							        	Layer("Softmax")], 
+							        	n_iter=i))])
+
+									best = testModel(data, pipeline, best, l, str(u0) +","+ str(u1) + ","+str(u2), type0+","+type1+","+type2, i)
+
+	print "bestOverall===================================="
+	print "trainingAccuracy" + " = "  + best['trainingAccuracy']
+	print "learningRate" + " = "  + best['units']
+	print "units" + " = "  + best['type']
+	print "type" + " = "  + best['iterations']
+	print "iterations" + " = "  + best['learningRate']
+
+def testModel(data, model, b, l, u, t, i ):
+
+	model.fit(data['train'], data['label'])
+	prediction = model.predict(data['train'])
+	results = accuracy_score(data['label'], prediction)
+
+	print "trainingAccuracy" + " = "  + str(results)
+	print "learningRate" + " = "  + str(l)
+	print "units" + " = "  + str(u)
+	print "type" + " = "  + str(t)
+	print "iterations" + " = "  + str(i)
+
+	if results > b['trainingAccuracy']:
+		b['trainingAccuracy'] = results
+		b['learningRate'] = l
+		b['units'] = u
+		b['type'] = t
+		b['iterations'] = i
+
+	return b
+
+def autoEncoderOptimization(data):
+	rbm = ae.AutoEncoder(
+			layers=[
+				ae.Layer("Tanh", units=300),
+				ae.Layer("Sigmoid", units=200)
+			],
+			learning_rate=0.002,
+			n_iter=10
+		)
+
+	rbm.fit(data["train"])
+
+	model = Classifier(
+			layers=[
+				Layer("Tanh", units=300),
+				Layer("Sigmoid", units=200),
+				Layer("Softmax")
+			],
+		)
+
+	rbm.transfer(model)
+
+	model.fit(data["train"], data["label"])
+
+	prediction = model.predict(data["train"])
+
+	print accuracy_score(data["label"], prediction)
+
+
+
+autoEncoderOptimization(preppedData)
+
+	# grid = [		#left maxout out
+	# 	{'nn__learning_rate':[0.05, 0.01, 0.005, 0.001, 0.0001, 0.00001],
+	# 		'nn__hidden0__units': [4, 8, 10, 50, 100, 200], 
+	# 		'nn__hidden0__type':['Rectifier', 'Sigmoid', 'Sigmoid', 
+	# 					'Tanh', 'ExpLin', 'Linear', 'Softmax', 'Gaussian'],
+	# 		'nn__hidden1__units': [4, 8, 10, 50, 100, 200], 
+	# 		'nn__hidden1__type':['Rectifier', 'Sigmoid', 'Sigmoid', 
+	# 					'Tanh', 'ExpLin', 'Linear', 'Softmax', 'Gaussian'],			
+	# 	}
+	# ]
+
+	# gs = GridSearchCV(pipeline, param_grid=grid)
+	# gs.fit(data['train'], data['label'])
+
+	# print "Best parameters set found on development set:"
+	# print gs.best_params_ 
+	# print("Grid scores on development set:")
+	# for params, mean_score, scores in gs.grid_scores_:
+	# 	print("%0.3f (+/-%0.03f) for %r"
+ #              % (mean_score, scores.std() * 2, params))
+	# print("Detailed classification report:")
+	# print("The scores are computed on the full evaluation set.")
+	# y_true, y_pred = y_test, gs.predict(data['train'])
+	# print(classification_report(y_true, y_pred))
+
+	# with open('gs_data.pk1', 'wb') as output:
+	# 	pickle.dump(gs, output, pickle.HIGHEST_PROTOCOL)
+
+#neuralCombo(preppedData)
 
 
 # pipeline = Pipeline([
