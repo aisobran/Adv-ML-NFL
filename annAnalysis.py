@@ -108,7 +108,8 @@ def autoEncoderOptimization(data):
 	rbm = ae.AutoEncoder(
 			layers=[
 				ae.Layer("Tanh", units=300),
-				ae.Layer("Sigmoid", units=200)
+				ae.Layer("Sigmoid", units=200),
+				ae.Layer("Tanh", units=100)
 			],
 			learning_rate=0.002,
 			n_iter=10
@@ -120,6 +121,9 @@ def autoEncoderOptimization(data):
 			layers=[
 				Layer("Tanh", units=300),
 				Layer("Sigmoid", units=200),
+				Layer("Tanh", units=100),
+				Layer("Rectifier", units=100),
+				Layer("Rectifier", units=50),
 				Layer("Softmax")
 			],
 		)
@@ -133,8 +137,24 @@ def autoEncoderOptimization(data):
 	print accuracy_score(data["label"], prediction)
 
 
+def testRunner():
+	pipeline = Pipeline([
+        ('min/max scaler', MinMaxScaler(feature_range=(0.0, 1.0))),
+        ('neural network', Classifier(layers=[
+        	Layer("Rectifier", units=200),
+        	Layer("Gaussian", units=200),
+        	#Layer("Maxout", units=100, pieces=2),
+        	Layer("Softmax")],
+        learning_rate=0.001, 
+        n_iter=25))])
+	pbp.testingFrameworkByTeam(pipeline)
 
-autoEncoderOptimization(preppedData)
+testRunner()
+
+#neuralCombo(preppedData)
+#autoEncoderOptimization(preppedData)
+
+
 
 	# grid = [		#left maxout out
 	# 	{'nn__learning_rate':[0.05, 0.01, 0.005, 0.001, 0.0001, 0.00001],
@@ -164,7 +184,7 @@ autoEncoderOptimization(preppedData)
 	# with open('gs_data.pk1', 'wb') as output:
 	# 	pickle.dump(gs, output, pickle.HIGHEST_PROTOCOL)
 
-#neuralCombo(preppedData)
+
 
 
 # pipeline = Pipeline([
