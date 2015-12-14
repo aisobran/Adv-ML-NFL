@@ -14,11 +14,11 @@ from sklearn.preprocessing import MinMaxScaler
 
 pbp = playByPlay()
 pbp.select("CAR",2014)
-preppedData = pbp.temporal(25)
+preppedData = pbp.temporal(20)
 
 
 pipeline = Pipeline([('min/max scaler',MinMaxScaler(feature_range=(0.0, 1.0))),
-                     ('svm',SVC(kernel='poly',C=100,degree=2))])
+                     ('svm',SVC(kernel='poly',C=100,degree=5))])
 print "Classifier created"
 
 print "Train Classification report:"
@@ -38,3 +38,12 @@ pipeline.fit(preppedData['train'][:-300],preppedData['label'][:-300])
 y_true, y_pred = preppedData['label'][-300:], pipeline.predict(preppedData['train'][-300:])
 print classification_report(y_true,y_pred)
 print accuracy_score(y_true,y_pred)
+
+
+def testRunner():
+	pipeline = Pipeline([
+        ('min/max scaler', MinMaxScaler(feature_range=(0.0, 1.0))),
+        ('svm',SVC(kernel='poly',C=100,degree=2))])
+	pbp.testingFrameworkByTeam(pipeline,year=2012)
+
+testRunner()
