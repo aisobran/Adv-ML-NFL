@@ -188,7 +188,7 @@ def unitSizeAnalysis(data):
 testRunner()
 #pbp.test()
 
-neuralCombo(preppedData)
+#neuralCombo(preppedData)
 #autoEncoderOptimization(preppedData)
 
 

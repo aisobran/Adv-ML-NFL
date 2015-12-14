@@ -15,6 +15,8 @@ for file in files:
 	width = 0.35
 
 	fig, ax = plt.subplots()
+	fig.set_size_inches(18.5 * 0.9, 10.5 * 0.9)
+	#ax.set_size_inches(18.5, 10.5)
 	rects1 = ax.bar(ind, table["Test"], width, color='r')
 	rects2 = ax.bar(ind+width, table["Tend"], width, color='b')
 
@@ -24,6 +26,7 @@ for file in files:
 	ax.set_xticklabels(table["Team"])
 
 	ax.legend((rects1[0], rects2[0]), ("Test", "Tend"))
+	ax.set_ylim([min(min(table["Test"]), min(table["Tend"])) * 0.97, max(max(table["Test"]), max(table["Tend"])) * 1.03])
 
-	plt.show()
+	plt.savefig("annResults/testAcc/fig/" + year + '.png', bbox_inches='tight', dpi=100)
 
