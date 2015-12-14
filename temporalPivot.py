@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import math
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
+from sklearn.metrics import accuracy_score
 
 
 
@@ -73,6 +74,30 @@ class playByPlay(object):
 		learningData['train'] = np.array([s.temporalSubset(j, length) for j in xrange(length, len(s.workingDataSet) - 1)])
 		learningData['label'] = np.array(s.workingDataSet['complete'].map(s.tranformPass)[(length+1):len(s.workingDataSet)])
 		return learningData
+
+	def testingFrameworkByTeam(s, model, year=2015, length=20, dataSplit=0.6):	#usage: length is number of past timepoints back
+		teamNames = pd.unique(s.nfl['possession'].values.ravel())				#dataSplit is the % split based on 
+		teamTestAccuracyTracker ={}
+		for name in teamNames:
+			s.workingDataSet = s.subset[(s.subset['possession']==name)]
+			s.workingDataSet = s.workingDataSet[(s.workingDataSet['year']==year)]
+			allTemporalData = s.temporal(length)
+			numberOfPlays = len(allTemporalData['label'])
+			split=math.floor(numberOfPlays * dataSplit)
+
+			trainingSplit = {'train': allTemporalData['train'][:split], 'label': allTemporalData['label'][:split]}
+			testingSplit = {'train': allTemporalData['train'][split:], 'label': allTemporalData['label'][split:]}
+
+			model.fit(trainingSplit['train'], trainingSplit['label'])
+			acc = accuracy_score(testingSplit['label'], model.predict(testingSplit['train']))
+
+			teamTestAccuracyTracker[name] = acc
+			print name + "," + str(acc)
+
+		# for key in teamTestAccuracyTracker:
+		# 	print key + "," + str(teamTestAccuracyTracker[key])
+
+
 
 
 # def selectTeamAndWeek(data, team, year, week):
