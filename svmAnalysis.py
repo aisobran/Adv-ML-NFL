@@ -6,28 +6,35 @@ Created on Sat Dec 12 11:49:55 2015
 """
 from sklearn.svm import SVC
 from sklearn.metrics import classification_report
-from sklearn.grid_search import GridSearchCV
+from sklearn.metrics import accuracy_score
+from sklearn import cross_validation
+from sklearn.pipeline import Pipeline
 from temporalPivot import playByPlay
+from sklearn.preprocessing import MinMaxScaler
 
 pbp = playByPlay()
-pbp.select("CAR",2015)
-preppedData = pbp.temporal(20)
+pbp.select("CAR",2014)
+preppedData = pbp.temporal(25)
 
-def svmModel(data):
-    clf = SVC()
-    parameters = {'kernel':['linear', 'poly', 'rbf', 'sigmoid'],
-                  'C':[0.1,1,10],
-                  'degree':[2,3,4]}
-                  
-    gs = GridSearchCV(clf,parameters)
-    gs.fit(data['train'],data['label'])
-    
-    print "The best parameter set:"
-    gs.best_params_
-    
-    print "Classification report:"
-    y_true, y_pred = data['label'], gs.predict(data['train'])
-    print classification_report(y_true,y_pred)
-    
 
-svmModel(preppedData)
+pipeline = Pipeline([('min/max scaler',MinMaxScaler(feature_range=(0.0, 1.0))),
+                     ('svm',SVC(kernel='poly',C=100,degree=2))])
+print "Classifier created"
+
+print "Train Classification report:"
+pipeline.fit(preppedData['train'],preppedData['label'])
+
+y_true, y_pred = preppedData['label'], pipeline.predict(preppedData['train'])
+print classification_report(y_true,y_pred)
+print accuracy_score(y_true,y_pred)
+
+print "CrossValidation:"
+scores = cross_validation.cross_val_score(pipeline,preppedData['train'],preppedData['label'],cv=10)
+print scores.mean()
+
+print "Test Classification report:"
+pipeline.fit(preppedData['train'][:-300],preppedData['label'][:-300])
+
+y_true, y_pred = preppedData['label'][-300:], pipeline.predict(preppedData['train'][-300:])
+print classification_report(y_true,y_pred)
+print accuracy_score(y_true,y_pred)
