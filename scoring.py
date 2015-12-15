@@ -3,11 +3,13 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import glob
 
-files = glob.glob("annResults/testAcc/*.txt")
+#files = glob.glob("annResults/testAcc/*.txt")
+files = glob.glob("annResults/t7/*.txt")
 
 for file in files:
 
-	year = file.split(".")[0].split("testAccuracy")[1]
+	#year = file.split(".")[0].split("testAccuracy")[1]
+	year = file.split(".")[0].split("/").pop()
 
 	table = pd.read_csv(file, names=["Team", "Test", "Train", "Tend"])
 	N = len(table["Team"])
@@ -25,5 +27,5 @@ for file in files:
 	ax.set_xticks(ind + (width * 0.5))
 	ax.set_xticklabels(table["Team"])
 
-	plt.savefig("annResults/testAcc/scoring/" + year + '.png', bbox_inches='tight', dpi=100)
+	plt.savefig("annResults/t7/scoring/" + year + '.png', bbox_inches='tight', dpi=100)
 

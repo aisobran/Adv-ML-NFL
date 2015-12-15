@@ -140,16 +140,18 @@ def autoEncoderOptimization(data):
 	print accuracy_score(data["label"], prediction)
 
 def testRunner():
-	pipeline = Pipeline([
-        ('min/max scaler', MinMaxScaler(feature_range=(0.0, 1.0))),
-        ('neural network', Classifier(layers=[
-        	Layer("Rectifier", units=200),
-        	Layer("Gaussian", units=200),
-        	#Layer("Maxout", units=100, pieces=2),
-        	Layer("Softmax")],
-        learning_rate=0.001, 
-        n_iter=25))])
-	pbp.testingFrameworkByTeam(pipeline, 2015, 40, 0.6)
+	for y in [2013]:
+		pipeline = Pipeline([
+	        ('min/max scaler', MinMaxScaler(feature_range=(0.0, 1.0))),
+	        ('neural network', Classifier(layers=[
+	        	Layer("Rectifier", units=200),
+	        	Layer("Gaussian", units=200),
+	        	#Layer("Maxout", units=100, pieces=2),
+	        	Layer("Softmax")],
+	        learning_rate=0.001, 
+	        n_iter=25))])
+		print "YEAR ====" + str(y)
+		pbp.testingFrameworkByTeam(pipeline, y, 9, 0.6)
 
 def temporalTest():
 	pipeline = Pipeline([
@@ -192,12 +194,9 @@ def unitSizeAnalysis(data):
 		print str(i) + "," + str(testAcc) + "," + str(trainingAcc)
 
 
-
-
-
-temporalTest()
+#temporalTest()
 #unitSizeAnalysis(preppedData)
-#testRunner()
+testRunner()
 #pbp.test()
 
 

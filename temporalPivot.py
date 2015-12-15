@@ -101,7 +101,7 @@ class playByPlay(object):
 			print name + "," + str(acc) + "," + str(trainAcc) + "," + str(playDistribution)
 
 	def temporalLengthOptimization(s, m):
-		name = 'CAR'
+		name = 'NE'
 		year = 2011
 		dataSplit = 0.6
 		s.workingDataSet = s.subset[(s.subset['possession']==name)]
@@ -125,8 +125,6 @@ class playByPlay(object):
 			score = (acc - playDistribution) * 100
 
 			print str(i) + "," + str(acc) + "," + str(trainAcc) + "," + str(playDistribution) + "," + str(score)
-
-
 
 
 	def test(s):
