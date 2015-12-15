@@ -3,6 +3,7 @@ import numpy as np
 import math
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 from sklearn.metrics import accuracy_score
+import copy
 
 
 
@@ -99,15 +100,41 @@ class playByPlay(object):
 			teamTestAccuracyTracker[name] = acc
 			print name + "," + str(acc) + "," + str(trainAcc) + "," + str(playDistribution)
 
-		# for key in teamTestAccuracyTracker:
-		# 	print key + "," + str(teamTestAccuracyTracker[key])
+	def temporalLengthOptimization(s, m):
+		name = 'PIT'
+		year = 2011
+		dataSplit = 0.6
+		s.workingDataSet = s.subset[(s.subset['possession']==name)]
+		s.workingDataSet = s.workingDataSet[(s.workingDataSet['year']==year)]
+
+		for i in range(1, 200):
+			model = copy.deepcopy(m)
+			allTemporalData = s.temporal(i)
+			numberOfPlays = len(allTemporalData['label'])
+			split=math.floor(numberOfPlays * dataSplit)
+
+			trainingSplit = {'train': allTemporalData['train'][:split], 'label': allTemporalData['label'][:split]}
+			testingSplit = {'train': allTemporalData['train'][split:], 'label': allTemporalData['label'][split:]}
+
+			model.fit(trainingSplit['train'], trainingSplit['label'])
+			acc = accuracy_score(testingSplit['label'], model.predict(testingSplit['train']))
+			trainAcc = accuracy_score(trainingSplit['label'], model.predict(trainingSplit['train']))
+
+			playCounts = np.bincount(testingSplit['label'])
+			playDistribution = max(playCounts)/float(sum(playCounts))
+			score = (acc - playDistribution) * 100
+
+			print str(i) + "," + str(acc) + "," + str(trainAcc) + "," + str(playDistribution) + "," + str(score)
+
+
+
 
 	def test(s):
 		#s.workingDataSet = s.subset[(s.subset['possession']=='CAR') & s.workingDataSet['year']==2015]
 		allTemporalData = s.temporal(10)
 		print(np.bincount(allTemporalData['label'])[0])
 
-	
+
 
 
 

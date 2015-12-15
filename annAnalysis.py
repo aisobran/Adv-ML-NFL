@@ -151,6 +151,18 @@ def testRunner():
         n_iter=25))])
 	pbp.testingFrameworkByTeam(pipeline, 2015, 40, 0.6)
 
+def temporalTest():
+	pipeline = Pipeline([
+        ('min/max scaler', MinMaxScaler(feature_range=(0.0, 1.0))),
+        ('neural network', Classifier(layers=[
+        	Layer("Rectifier", units=200),
+        	Layer("Gaussian", units=200),
+        	#Layer("Maxout", units=100, pieces=2),
+        	Layer("Softmax")],
+        learning_rate=0.001, 
+        n_iter=25))])
+	pbp.temporalLengthOptimization(pipeline)
+
 def unitSizeAnalysis(data):
 
 	units = range(3,35) + [200, 300, 400, 500, 600, 700, 800, 900]
@@ -183,10 +195,11 @@ def unitSizeAnalysis(data):
 
 
 
-
+temporalTest()
 #unitSizeAnalysis(preppedData)
-testRunner()
+#testRunner()
 #pbp.test()
+
 
 #neuralCombo(preppedData)
 #autoEncoderOptimization(preppedData)
