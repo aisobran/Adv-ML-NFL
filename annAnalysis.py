@@ -26,10 +26,10 @@ def neuralCombo(data):
         	n_iter=25))])
 
 	learningRate = [0.05, 0.005, 0.001, 0.0001, 0.00001]
-	units = [100, 200]
-	#type = ['Rectifier', 'Sigmoid', 'Sigmoid', 'Tanh', 'Linear', 'Softmax', 'Gaussian']
-	type = ['Rectifier', 'Linear', 'Gaussian']
-	iterations=[25, 100]
+	units = [5, 50, 100, 200]
+	type = ['Rectifier', 'Sigmoid', 'Sigmoid', 'Tanh', 'Linear', 'Softmax', 'Gaussian']
+	#type = ['Rectifier', 'Linear', 'Gaussian']
+	iterations=[25, 50, 100, 200]
 
 	best = {}
 	best['learningRate'] = 0.05
