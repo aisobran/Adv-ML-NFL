@@ -18,7 +18,9 @@ for f in files:
     ax = data[year].plot(x=data[year].Team,kind='bar',figsize=(14,10),title="Run vs. Pass Prediction Accuracy "+year)
     ax.set_ylim([min(min(data[year].TestAccuracy), min(data[year].PlayDistribution)) * 0.97, max(max(data[year].TestAccuracy), max(data[year].PlayDistribution)) * 1.03])
     plt.savefig('svmResults/Accuracy'+year+'.png')
-    
+    data[year]['Scores'] = (data[year].TestAccuracy - data[year].PlayDistribution)*100
+    data[year].plot(kind='bar',x='Team',y='Scores',figsize=(14,10))
+    plt.savefig('svmResults/Scores'+year+'.png')
 
 teams = list(data['2009'].Team)
 MeanTestAcc = []
@@ -50,3 +52,9 @@ scoreData = pd.DataFrame({'Team':teams})
 scoreData['Score'] = score
 ax2 = scoreData.plot(kind='bar',x='Team',y='Score',figsize=(14,10))
 plt.savefig('svmResults/ScoreSVM.png')     
+print scoreData['Score'].mean()
+
+
+temporalData = pd.read_csv('svmResults/temporalDistance.csv',header=0)
+temporalData.plot(x='TemporalDistance',figsize=(14,10))
+plt.savefig('svmResults/TemporalDistance analysis.png')

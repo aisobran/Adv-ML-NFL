@@ -100,14 +100,15 @@ class playByPlay(object):
 			teamTestAccuracyTracker[name] = acc
 			print name + "," + str(acc) + "," + str(trainAcc) + "," + str(playDistribution)
 
-	def temporalLengthOptimization(s, m):
-		name = 'PIT'
+	def temporalLengthOptimization(s, m, team):
+		name = team
+		print name
 		year = 2011
 		dataSplit = 0.6
 		s.workingDataSet = s.subset[(s.subset['possession']==name)]
 		s.workingDataSet = s.workingDataSet[(s.workingDataSet['year']==year)]
 
-		for i in range(1, 200):
+		for i in range(1, 50):
 			model = copy.deepcopy(m)
 			allTemporalData = s.temporal(i)
 			numberOfPlays = len(allTemporalData['label'])
