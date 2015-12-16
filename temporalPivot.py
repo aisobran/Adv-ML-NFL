@@ -100,9 +100,17 @@ class playByPlay(object):
 			teamTestAccuracyTracker[name] = acc
 			print name + "," + str(acc) + "," + str(trainAcc) + "," + str(playDistribution)
 
+<<<<<<< HEAD
 	def temporalLengthOptimization(s, m, team):
 		name = team
 		print name
+||||||| merged common ancestors
+	def temporalLengthOptimization(s, m):
+		name = 'PIT'
+=======
+	def temporalLengthOptimization(s, m):
+		name = 'NE'
+>>>>>>> de62dc08e0458d90434325dfc1d2829fe9586c40
 		year = 2011
 		dataSplit = 0.6
 		s.workingDataSet = s.subset[(s.subset['possession']==name)]
@@ -126,8 +134,6 @@ class playByPlay(object):
 			score = (acc - playDistribution) * 100
 
 			print str(i) + "," + str(acc) + "," + str(trainAcc) + "," + str(playDistribution) + "," + str(score)
-
-
 
 
 	def test(s):
